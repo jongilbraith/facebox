@@ -254,9 +254,11 @@
   function fillFaceboxFromHref(href, klass) {
     // div
     if (href.match(/#/)) {
-      var url    = window.location.href.split('#')[0]
-      var target = href.replace(url,'')
-      jQuery.facebox.reveal(jQuery(target).show().replaceWith("<div id='facebox_moved'></div>"), klass)
+      var url        = window.location.href.split('#')[0]
+      var target     = href.replace(url,'')
+      var newelement = jQuery(target).clone().show()
+      jQuery(target).replaceWith("<div id='facebox_moved'></div>")
+      jQuery.facebox.reveal(newelement, klass)
 
     // image
     } else if (href.match(jQuery.facebox.settings.imageTypesRegexp)) {
