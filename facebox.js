@@ -33,8 +33,8 @@
  *
  *  The above will open a facebox with "some html" as the content.
  *    
- *    jQuery.facebox(function($) { 
- *      $.get('blah.html', function(data) { $.facebox(data) })
+ *    jQuery.facebox(function(jQuery) { 
+ *      jQuery.get('blah.html', function(data) { jQuery.facebox(data) })
  *    })
  *
  *  The above will show a loading screen before the passed function is called,
@@ -62,25 +62,25 @@
  *
  *  Simply bind a function to any of these hooks:
  *
- *   $(document).bind('reveal.facebox', function() { ...stuff to do after the facebox and contents are revealed... })
+ *   jQuery(document).bind('reveal.facebox', function() { ...stuff to do after the facebox and contents are revealed... })
  *
  */
-(function($) {
-  $.facebox = function(data, klass) {
-    $.facebox.loading()
+(function(jQuery) {
+  jQuery.facebox = function(data, klass) {
+    jQuery.facebox.loading()
 
     if (data.ajax) fillFaceboxFromAjax(data.ajax, klass)
     else if (data.image) fillFaceboxFromImage(data.image, klass)
     else if (data.div) fillFaceboxFromHref(data.div, klass)
-    else if ($.isFunction(data)) data.call($)
-    else $.facebox.reveal(data, klass)
+    else if (jQuery.isFunction(data)) data.call(jQuery)
+    else jQuery.facebox.reveal(data, klass)
   }
 
   /*
    * Public, $.facebox methods
    */
 
-  $.extend($.facebox, {
+  jQuery.extend(jQuery.facebox, {
     settings: {
       opacity      : 0,
       overlay      : true,
@@ -119,37 +119,37 @@
 
     loading: function() {
       init()
-      if ($('#facebox .loading').length == 1) return true
+      if (jQuery('#facebox .loading').length == 1) return true
       showOverlay()
 
-      $('#facebox .content').empty()
-      $('#facebox .body').children().hide().end().
-        append('<div class="loading"><img src="'+$.facebox.settings.loadingImage+'"/></div>')
+      jQuery('#facebox .content').empty()
+      jQuery('#facebox .body').children().hide().end().
+      append('<div class="loading"><img src="'+jQuery.facebox.settings.loadingImage+'"/></div>')
 
-      $('#facebox').css({
+      jQuery('#facebox').css({
         top:	getPageScroll()[1] + (getPageHeight() / 10),
-        left:	$(window).width() / 2 - 205 
+        left:	jQuery(window).width() / 2 - 205 
       }).show()
 
-      $(document).bind('keydown.facebox', function(e) {
-        if (e.keyCode == 27) $.facebox.close()
+      jQuery(document).bind('keydown.facebox', function(e) {
+        if (e.keyCode == 27) jQuery.facebox.close()
         return true
       })
-      $(document).trigger('loading.facebox')
+      jQuery(document).trigger('loading.facebox')
     },
 
     reveal: function(data, klass) {
-      $(document).trigger('beforeReveal.facebox')
-      if (klass) $('#facebox .content').addClass(klass)
-      $('#facebox .content').append(data)
-      $('#facebox .loading').remove()
-      $('#facebox .body').children().fadeIn('normal')
-      $('#facebox').css('left', $(window).width() / 2 - ($('#facebox table').width() / 2))
-      $(document).trigger('reveal.facebox').trigger('afterReveal.facebox')
+      jQuery(document).trigger('beforeReveal.facebox')
+      if (klass) jQuery('#facebox .content').addClass(klass)
+      jQuery('#facebox .content').append(data)
+      jQuery('#facebox .loading').remove()
+      jQuery('#facebox .body').children().fadeIn('normal')
+      jQuery('#facebox').css('left', jQuery(window).width() / 2 - (jQuery('#facebox table').width() / 2))
+      jQuery(document).trigger('reveal.facebox').trigger('afterReveal.facebox')
     },
 
     close: function() {
-      $(document).trigger('close.facebox')
+      jQuery(document).trigger('close.facebox')
       return false
     }
   })
@@ -158,11 +158,11 @@
    * Public, $.fn methods
    */
 
-  $.fn.facebox = function(settings) {
+  jQuery.fn.facebox = function(settings) {
     init(settings)
 
     function clickHandler() {
-      $.facebox.loading(true)
+      jQuery.facebox.loading(true)
 
       // support for rel="facebox.inline_popup" syntax, to add a class
       // also supports deprecated "facebox[.inline_popup]" syntax
@@ -182,29 +182,29 @@
 
   // called one time to setup facebox on this page
   function init(settings) {
-    if ($.facebox.settings.inited) return true
-    else $.facebox.settings.inited = true
+    if (jQuery.facebox.settings.inited) return true
+    else jQuery.facebox.settings.inited = true
 
-    $(document).trigger('init.facebox')
+    jQuery(document).trigger('init.facebox')
     makeCompatible()
 
-    var imageTypes = $.facebox.settings.imageTypes.join('|')
-    $.facebox.settings.imageTypesRegexp = new RegExp('\.(' + imageTypes + ')$', 'i')
+    var imageTypes = jQuery.facebox.settings.imageTypes.join('|')
+    jQuery.facebox.settings.imageTypesRegexp = new RegExp('\.(' + imageTypes + ')$', 'i')
 
-    if (settings) $.extend($.facebox.settings, settings)
-    $('body').append($.facebox.settings.faceboxHtml)
+    if (settings) jQuery.extend(jQuery.facebox.settings, settings)
+    jQuery('body').append(jQuery.facebox.settings.faceboxHtml)
 
     var preload = [ new Image(), new Image() ]
-    preload[0].src = $.facebox.settings.closeImage
-    preload[1].src = $.facebox.settings.loadingImage
+    preload[0].src = jQuery.facebox.settings.closeImage
+    preload[1].src = jQuery.facebox.settings.loadingImage
 
-    $('#facebox').find('.b:first, .bl, .br, .tl, .tr').each(function() {
+    jQuery('#facebox').find('.b:first, .bl, .br, .tl, .tr').each(function() {
       preload.push(new Image())
-      preload.slice(-1).src = $(this).css('background-image').replace(/url\((.+)\)/, '$1')
+      preload.slice(-1).src = jQuery(this).css('background-image').replace(/url\((.+)\)/, '$1')
     })
 
-    $('#facebox .close').click($.facebox.close)
-    $('#facebox .close_image').attr('src', $.facebox.settings.closeImage)
+    jQuery('#facebox .close').click(jQuery.facebox.close)
+    jQuery('#facebox .close_image').attr('src', jQuery.facebox.settings.closeImage)
   }
   
   // getPageScroll() by quirksmode.com
@@ -238,7 +238,7 @@
 
   // Backwards compatibility
   function makeCompatible() {
-    var $s = $.facebox.settings
+    var $s = jQuery.facebox.settings
 
     $s.loadingImage = $s.loading_image || $s.loadingImage
     $s.closeImage = $s.close_image || $s.closeImage
@@ -256,10 +256,10 @@
     if (href.match(/#/)) {
       var url    = window.location.href.split('#')[0]
       var target = href.replace(url,'')
-      $.facebox.reveal($(target).show().replaceWith("<div id='facebox_moved'></div>"), klass)
+      jQuery.facebox.reveal(jQuery(target).show().replaceWith("<div id='facebox_moved'></div>"), klass)
 
     // image
-    } else if (href.match($.facebox.settings.imageTypesRegexp)) {
+    } else if (href.match(jQuery.facebox.settings.imageTypesRegexp)) {
       fillFaceboxFromImage(href, klass)
     // ajax
     } else {
@@ -270,28 +270,28 @@
   function fillFaceboxFromImage(href, klass) {
     var image = new Image()
     image.onload = function() {
-      $.facebox.reveal('<div class="image"><img src="' + image.src + '" /></div>', klass)
+      jQuery.facebox.reveal('<div class="image"><img src="' + image.src + '" /></div>', klass)
     }
     image.src = href
   }
 
   function fillFaceboxFromAjax(href, klass) {
-    $.get(href, function(data) { $.facebox.reveal(data, klass) })
+    jQuery.get(href, function(data) { jQuery.facebox.reveal(data, klass) })
   }
 
   function skipOverlay() {
-    return $.facebox.settings.overlay == false || $.facebox.settings.opacity === null 
+    return jQuery.facebox.settings.overlay == false || jQuery.facebox.settings.opacity === null 
   }
 
   function showOverlay() {
     if (skipOverlay()) return
 
-    if ($('#facebox_overlay').length == 0) 
-      $("body").append('<div id="facebox_overlay" class="facebox_hide"></div>')
+    if (jQuery('#facebox_overlay').length == 0) 
+      jQuery("body").append('<div id="facebox_overlay" class="facebox_hide"></div>')
 
-    $('#facebox_overlay').hide().addClass("facebox_overlayBG")
-      .css('opacity', $.facebox.settings.opacity)
-      .click(function() { $(document).trigger('close.facebox') })
+    jQuery('#facebox_overlay').hide().addClass("facebox_overlayBG")
+      .css('opacity', jQuery.facebox.settings.opacity)
+      .click(function() { jQuery(document).trigger('close.facebox') })
       .fadeIn(200)
     return false
   }
@@ -299,10 +299,10 @@
   function hideOverlay() {
     if (skipOverlay()) return
 
-    $('#facebox_overlay').fadeOut(200, function(){
-      $("#facebox_overlay").removeClass("facebox_overlayBG")
-      $("#facebox_overlay").addClass("facebox_hide") 
-      $("#facebox_overlay").remove()
+    jQuery('#facebox_overlay').fadeOut(200, function(){
+      jQuery("#facebox_overlay").removeClass("facebox_overlayBG")
+      jQuery("#facebox_overlay").addClass("facebox_hide") 
+      jQuery("#facebox_overlay").remove()
     })
     
     return false
@@ -312,13 +312,13 @@
    * Bindings
    */
 
-  $(document).bind('close.facebox', function() {
-    $(document).unbind('keydown.facebox')
-    $('#facebox').fadeOut(function() {
-      if ($('#facebox_moved').length == 0) $('#facebox .content').removeClass().addClass('content')
-      else $('#facebox_moved').replaceWith($('#facebox .content').children().hide())
+  jQuery(document).bind('close.facebox', function() {
+    jQuery(document).unbind('keydown.facebox')
+    jQuery('#facebox').fadeOut(function() {
+      if (jQuery('#facebox_moved').length == 0) jQuery('#facebox .content').removeClass().addClass('content')
+      else jQuery('#facebox_moved').replaceWith(jQuery('#facebox .content').children().hide())
       hideOverlay()
-      $('#facebox .loading').remove()
+      jQuery('#facebox .loading').remove()
     })
   })
 
